@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>Lecture PDF</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+
+body{
+
+font-family:Arial;
+text-align:center;
+
+}
+
+canvas{
+
+margin:10px;
+
+}
+
+#watermark{
+
+position:fixed;
+top:40%;
+left:20%;
+font-size:40px;
+color:rgba(0,0,0,0.1);
+transform:rotate(-30deg);
+pointer-events:none;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Lecture du cours</h2>
+
+<div id="watermark"></div>
+
+<div id="pdf-container"></div>
+
+<script>
+
+// vérifier accès
+
+if(localStorage.getItem("acces")!="autorise"){
+window.location="index.html";
+}
+
+// filigrane utilisateur
+
+const user = localStorage.getItem("user") || "membre";
+
+document.getElementById("watermark").innerText =
+"Club Robotique - "+user;
+
+
+// récupérer nom du pdf
+
+const params = new URLSearchParams(window.location.search);
+const pdfFile = params.get("pdf");
+
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+pdfjsLib.getDocument("pdf/"+pdfFile).promise.then(function(pdf){
+
+for(let pageNum=1; pageNum<=pdf.numPages; pageNum++){
+
+pdf.getPage(pageNum).then(function(page){
+
+const scale = 1.5;
+const viewport = page.getViewport({scale:scale});
+
+const canvas = document.createElement("canvas");
+
+canvas.width = viewport.width;
+canvas.height = viewport.height;
+
+document.getElementById("pdf-container").appendChild(canvas);
+
+page.render({
+
+canvasContext: canvas.getContext("2d"),
+viewport: viewport
+
+});
+
+});
+
+}
+
+});
+
+// bloquer clic droit
+
+document.addEventListener("contextmenu", e => e.preventDefault());
+
+// bloquer raccourcis
+
+document.addEventListener("keydown", function(e){
+
+if(
+(e.ctrlKey && e.key === "s") ||
+(e.ctrlKey && e.key === "p") ||
+(e.ctrlKey && e.key === "u")
+){
+
+e.preventDefault();
+
+}
+
+});
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+<title>Cours Robotique</title>
+
+</head>
+
+<body>
+
+<h1>Cours du Club Robotique</h1>
+
+<ul>
+
+<li>
+<a href="lecture.html?pdf=Cours1.pdf">
+Introduction Robotique
+</a>
+</li>
+
+<li>
+<a href="lecture.html?pdf=cours2.pdf">
+les bases
+</a>
+</li>
+
+<li>
+<a href="lecture.html?pdf=cours3.pdf">
+Programmation(Langage C++)
+</a>
+</li>
+
+</ul>
+
+<br>
+
+<button onclick="logout()">Déconnexion</button>
+
+<script>
+
+if(localStorage.getItem("acces")!="autorise"){
+window.location="index.html";
+}
+
+function logout(){
+
+localStorage.removeItem("acces");
+localStorage.removeItem("user");
+
+window.location="index.html";
+
+}
+
+</script>
+
+</body>
+
+</html>
