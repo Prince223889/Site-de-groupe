@@ -1,27 +1,28 @@
-const CACHE_NAME = 'robot-cache-vFINAL';
+const CACHE_NAME = 'robot-club-v4';
 const ASSETS = [
-  'index.html',
-  'cours.html',
-  'lecteur.html',
-  'style.css',
-  'script.js',
-  'users.js',
-  'manifest.json'
+  './',
+  './index.html',
+  './cours.html',
+  './lecteur.html',
+  './style.css',
+  './script.js',
+  './users.js',
+  './manifest.json',
+  'https://cdnjs.cloudflare.com',
+  'https://cdnjs.cloudflare.com'
 ];
 
-// Installation
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
-    })
+// Installation : Mise en cache des fichiers de base
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
   );
   self.skipWaiting();
 });
 
-// Activation (nettoie les anciens caches)
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
+// Activation : Nettoyage
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
     caches.keys().then((keys) => {
       return Promise.all(keys.map((key) => {
         if (key !== CACHE_NAME) return caches.delete(key);
@@ -30,17 +31,28 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Stratégie : Cache d'abord, puis Réseau (Idéal pour le hors-ligne)
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      return cachedResponse || fetch(event.request).then((response) => {
-        // Optionnel : mettre en cache les PDF consultés au fur et à mesure
-        if (event.request.url.includes('.pdf')) {
-          let responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+// Stratégie de Fetch (Navigation + PDF)
+self.addEventListener('fetch', (e) => {
+  e.respondWith(
+    caches.match(e.request).then((cachedResponse) => {
+      // 1. Si le fichier est déjà dans le cache, on le sert immédiatement
+      if (cachedResponse) return cachedResponse;
+
+      // 2. Sinon, on tente le réseau
+      return fetch(e.request).then((networkResponse) => {
+        // Si c'est un PDF, on le clone et on l'ajoute au cache "au vol"
+        if (e.request.url.includes('.pdf')) {
+          return caches.open(CACHE_NAME).then((cache) => {
+            cache.put(e.request, networkResponse.clone());
+            return networkResponse;
+          });
         }
-        return response;
+        return networkResponse;
+      }).catch(() => {
+        // 3. Fallback : Si on est offline et qu'on navigue vers une page HTML
+        if (e.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
       });
     })
   );
