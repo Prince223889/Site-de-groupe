@@ -1,7 +1,8 @@
-/* Design Global Club Robotique */
+/* Design Cyber Robotique */
 body {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    background-color: #0e1621; /* Fond sombre tech */
+    font-family: 'Roboto Mono', monospace; /* Police de code */
+    background-color: #050a0f;
+    background-image: radial-gradient(circle at center, #102030 0%, #050a0f 100%);
     color: #ffffff;
     display: flex;
     flex-direction: column;
@@ -12,20 +13,23 @@ body {
 }
 
 .container {
-    background: #1b2838;
+    background: rgba(27, 40, 56, 0.9); /* Effet verre fumé */
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-    border: 1px solid #30475e;
+    box-shadow: 0 0 25px rgba(0, 212, 255, 0.2);
+    border: 2px solid #00d4ff;
     width: 350px;
     text-align: center;
+    backdrop-filter: blur(5px);
 }
 
 h1, h2 {
+    font-family: 'Orbitron', sans-serif; /* Police futuriste */
     color: #00d4ff;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
 }
 
 input {
@@ -36,32 +40,37 @@ input {
     border-radius: 6px;
     border: 1px solid #30475e;
     background: #0e1621;
-    color: #fff;
+    color: #00ffcc; /* Texte vert fluo type terminal */
     font-size: 16px;
+    font-family: 'Roboto Mono', monospace;
+    transition: 0.3s;
 }
 
 input:focus {
     outline: none;
     border-color: #00d4ff;
-    box-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+    box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
 }
 
 button {
+    font-family: 'Orbitron', sans-serif;
     width: 100%;
     padding: 12px;
     background-color: #00d4ff;
-    color: #0e1621;
+    color: #050a0f;
     border: none;
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 14px;
     transition: 0.3s;
-    margin-top: 10px;
+    margin-top: 15px;
+    letter-spacing: 1px;
 }
 
 button:hover {
-    background-color: #0099ff;
+    background-color: #ffffff;
+    box-shadow: 0 0 20px #00d4ff;
     transform: translateY(-2px);
 }
 
@@ -74,13 +83,15 @@ ul {
 
 li {
     margin: 10px 0;
-    background: #243447;
+    background: #1b2838;
+    border: 1px solid #30475e;
     border-radius: 6px;
-    transition: 0.2s;
+    transition: 0.3s;
 }
 
 li:hover {
-    background: #2c3e50;
+    background: #243447;
+    border-color: #00d4ff;
 }
 
 li a {
@@ -94,4 +105,5 @@ li a {
     color: #ff4d4d;
     margin-top: 15px;
     font-size: 14px;
+    font-weight: bold;
 }
