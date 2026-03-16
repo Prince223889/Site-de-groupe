@@ -1,0 +1,10 @@
+{
+  "short_name": "RobotClub",
+  "name": "Club Robotique App",
+  "icons":,
+  "start_url": "./index.html",
+  "background_color": "#050a0f",
+  "display": "standalone",
+  "theme_color": "#00d4ff"
+}
+
