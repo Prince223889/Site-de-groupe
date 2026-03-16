@@ -1,4 +1,4 @@
-const CACHE_NAME = 'robot-club-v4';
+const CACHE_NAME = 'robot-club-v5'; // On passe en v5 pour forcer la mise à jour
 const ASSETS = [
   './',
   './index.html',
@@ -15,12 +15,13 @@ const ASSETS = [
 // Installation : Mise en cache des fichiers de base
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS))
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// Activation : Nettoyage
+// Activation : Nettoyage des anciens caches
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -31,29 +32,28 @@ self.addEventListener('activate', (e) => {
   );
 });
 
-// Stratégie de Fetch (Navigation + PDF)
+// Stratégie de Fetch (Réseau d'abord, sinon Cache)
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request).then((cachedResponse) => {
-      // 1. Si le fichier est déjà dans le cache, on le sert immédiatement
-      if (cachedResponse) return cachedResponse;
-
-      // 2. Sinon, on tente le réseau
-      return fetch(e.request).then((networkResponse) => {
-        // Si c'est un PDF, on le clone et on l'ajoute au cache "au vol"
+    fetch(e.request)
+      .then((networkResponse) => {
+        // Si on récupère un PDF sur le réseau, on le met en cache pour plus tard
         if (e.request.url.includes('.pdf')) {
-          return caches.open(CACHE_NAME).then((cache) => {
-            cache.put(e.request, networkResponse.clone());
-            return networkResponse;
-          });
+          const cacheCopy = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, cacheCopy));
         }
         return networkResponse;
-      }).catch(() => {
-        // 3. Fallback : Si on est offline et qu'on navigue vers une page HTML
-        if (e.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
+      })
+      .catch(() => {
+        // Si le réseau échoue (Hors-ligne), on regarde dans le cache
+        return caches.match(e.request).then((cachedResponse) => {
+          if (cachedResponse) return cachedResponse;
+          
+          // Si c'est une navigation (changement de page), on renvoie vers l'accueil
+          if (e.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
+      })
   );
 });
